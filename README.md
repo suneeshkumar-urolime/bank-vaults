@@ -145,6 +145,17 @@ auth:
       policies: allow_secrets
       period: 1h
 
+  # Allows creating roles in Vault which can be used later on for ACK
+  # RAM based authentication.
+  # See https://www.vaultproject.io/docs/auth/alicloud.html for
+  # more information.
+  - type: alicloud
+    roles:
+    - name: dev-role
+      arn: acs:ram::5530526458264587:role/dev-role
+      policies: allow_secrets
+      period: 1h
+
   # Allows creating roles in Vault which can be used later on for GCP
   # IAM based authentication.
   # See https://www.vaultproject.io/docs/auth/gcp.html for

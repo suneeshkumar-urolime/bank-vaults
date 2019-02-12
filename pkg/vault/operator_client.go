@@ -370,7 +370,7 @@ func (v *vault) Configure() error {
 
 	err = v.configureStartupSecrets()
 	if err != nil {
-		return fmt.Errorf("error writing startup secrets tor vault: %s", err.Error())
+		return fmt.Errorf("error writing startup secrets for vault: %s", err.Error())
 	}
 
 	return err
@@ -533,6 +533,15 @@ func (v *vault) configureAuthMethods() error {
 			if err != nil {
 				return fmt.Errorf("error configuring aws auth roles for vault: %s", err.Error())
 			}
+		case "alicloud":
+			roles, err := cast.ToSliceE(authMethod["roles"])
+			if err != nil {
+				return fmt.Errorf("error finding roles block for alicloud: %s", err.Error())
+			}
+			err = v.configureAlicloudRoles(roles)
+			if err != nil {
+				return fmt.Errorf("error configuring alicloud auth roles for vault: %s", err.Error())
+			}
 		case "gcp":
 			config, err := cast.ToStringMapE(authMethod["config"])
 			if err != nil {
@@ -689,6 +698,21 @@ func (v *vault) configureAWSCrossAccountRoles(crossAccountRoles []interface{}) e
 
 		if err != nil {
 			return fmt.Errorf("error putting %s cross account aws role into vault: %s", crossAccountRole["sts_account"], err.Error())
+		}
+	}
+	return nil
+}
+
+func (v *vault) configureAlicloudRoles(roles []interface{}) error {
+	for _, roleInterface := range roles {
+		role, err := cast.ToStringMapE(roleInterface)
+		if err != nil {
+			return fmt.Errorf("error converting roles for ack: %s", err.Error())
+		}
+		_, err = v.cl.Logical().Write(fmt.Sprint("auth/alicloud/role/", role["name"]), role)
+
+		if err != nil {
+			return fmt.Errorf("error putting %s alicloud role into vault: %s", role["name"], err.Error())
 		}
 	}
 	return nil

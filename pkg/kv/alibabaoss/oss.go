@@ -29,7 +29,7 @@ type ossStorage struct {
 	prefix string
 }
 
-// New creates a new kv.Service backed by AWS S3
+// New creates a new kv.Service backed by ACK OSS
 func New(endpoint, accessKeyID, accessKeySecret, bucket, prefix string) (kv.Service, error) {
 	client, err := oss.New(endpoint, accessKeyID, accessKeySecret)
 	if err != nil {
