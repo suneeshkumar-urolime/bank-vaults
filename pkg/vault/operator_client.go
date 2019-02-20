@@ -617,6 +617,7 @@ func (v *vault) configureAuthMethods() error {
 func (v *vault) configurePolicies() error {
 	policies := []map[string]string{}
 	err := viper.UnmarshalKey("policies", &policies)
+	fmt.Printf("%+v\n", policies)
 	if err != nil {
 		return fmt.Errorf("error unmarshalling vault policy config: %s", err.Error())
 	}
